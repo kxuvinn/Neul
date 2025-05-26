@@ -18,7 +18,7 @@ public class SleepRecord {
     }
 
     // 날짜 지정해서 기록
-    public SleepRecord(LocalDate data, Duration sleepDuration, String mood) {
+    public SleepRecord(LocalDate date, Duration sleepDuration, String mood) {
         this.date = date;
         this.sleepDuration = sleepDuration;
         this.mood = mood;
