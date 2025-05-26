@@ -34,9 +34,6 @@ public class PanelManager extends JFrame{
         addScreen("signup", new SignupPanel(controller)); // 회원가입 화면
         addScreen("main", new MainMenuPanel(controller));     // 메인(홈) 화면
         addScreen("calculator", new SleepInputPanel(controller)); // 시간계산기 화면
-        //addScreen("sleepRecommendation", new SleepRecommendationPanel(controller));
-        //addScreen("wakeRecommendation", new WakeRecommendationPanel(controller));
-        //addScreen("sleepCycle", new SleepCyclePanel(controller));
     }
 
     public void setController(ScreenController controller) {

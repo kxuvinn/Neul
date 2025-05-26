@@ -28,17 +28,18 @@ public class ScreenController {
     public void handleLoginSuccess() {
         String userId = AuthManager.getCurrentUser().getUsername();
 
+        SleepDataService sleepDataService = mainWindow.getSleepDataService();
         Duration avg = SleepCalculator.calculateAverage(mainWindow.getSleepDataService().getLast7DaysSleepDurations(userId));
+        SleepDataManager sleepDataManager = new SleepDataManager(sleepDataService);
 
         TodayPanel todayPanel = new TodayPanel(this);
         mainWindow.addScreen("today", todayPanel);
 
-        AnalysisPanel panel = new AnalysisPanel(mainWindow.getSleepDataService(), mainWindow.getInfoService(), avg, this, panelManager);
-        mainWindow.addScreen("analysis", panel);
+        AnalysisPanel panel = new AnalysisPanel(mainWindow.getSleepDataService(), mainWindow.getInfoService(), avg, this, panelManager, userId, sleepDataManager);
 
+        mainWindow.addScreen("analysis", panel);
         navigateTo("main");
     }
-
 
     public void handleSignupSuccess() {
         navigateTo("login");

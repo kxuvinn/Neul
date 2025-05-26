@@ -7,8 +7,10 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.util.*;
 
 public class SleepDataService {
@@ -93,10 +95,11 @@ public class SleepDataService {
         Map<String, Duration> graphData = new LinkedHashMap<>();
         List<SleepRecord> records = userSleepMap.getOrDefault(userId, new ArrayList<>());
         LocalDate now = LocalDate.now();
+        LocalDate monday = now.with(DayOfWeek.MONDAY);
 
         for (int i = 0; i < 7; i++) {
-            LocalDate targetDate = now.minusDays(6 - i);
-            String day = targetDate.getDayOfWeek().toString().substring(0, 3); // "MON", "TUE", ...
+            LocalDate targetDate = now.plusDays(i);
+            String day = targetDate.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH); // "Mon", "Tue", ...
             Duration duration = records.stream()
                     .filter(r -> r.getDate().equals(targetDate))
                     .map(SleepRecord::getSleepDuration)

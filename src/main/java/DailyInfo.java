@@ -2,16 +2,17 @@ import javax.swing.*;
 import java.awt.*;
 
 public class DailyInfo extends JDialog {
-    public DailyInfo(String day, String sleepTime, String quality) {        // 날짜, 취침시간, 수면의 질 넘겨받기
+    public DailyInfo(String day, String sleephour, String sleepminute, String sleepQuality, String emotion) {        // 날짜, 취침시간, 수면의 질 넘겨받기
 
         setTitle("Daily Information");    // 창 이름
-        setSize(753, 418);    // 창 크기
+        setSize(600, 400);    // 창 크기
         setResizable(false);
         setLocationRelativeTo(null);      // 창을 화면 정중앙에 띄움
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);     // 창 닫기
 
         setLayout(new BorderLayout());
         Color backgroundColor = new Color(200, 205, 225);  // 창 전체에 사용할 색
+        getContentPane().setBackground(backgroundColor);
 
         // 날짜
         JLabel dateLabel = new JLabel(day);
@@ -22,16 +23,106 @@ public class DailyInfo extends JDialog {
         dateLabel.setBackground(backgroundColor);          // ← contentPanel과 색 통일
         add(dateLabel, BorderLayout.NORTH);   // 위쪽
 
+        // 중앙 패널 (왼쪽: 원, 오른쪽: 텍스트)
+        JPanel centerPanel = new JPanel(new BorderLayout());
+        centerPanel.setBackground(backgroundColor);
+
+        // 왼쪽 원형 패널
+        CircleStatusPanel circlePanel = new CircleStatusPanel(sleepQuality);
+        centerPanel.add(circlePanel, BorderLayout.WEST);
+
         // 취침 시간, 수면의 질
         JPanel contentPanel = new JPanel(new GridLayout(2, 1));
         contentPanel.setBackground(backgroundColor);  // 바탕색 설정
 
-        JLabel sleepLabel = new JLabel(sleepTime + " 취침", SwingConstants.RIGHT);
-        JLabel qualityLabel = new JLabel("수면의 질: " + quality, SwingConstants.RIGHT);
+        JLabel sleepLabel = new JLabel(
+                "<html><b><span style='color:#4B0082'>" + sleephour + "시간 " + sleepminute + "분</span></b> 취침</html>",
+                SwingConstants.RIGHT);
+        sleepLabel.setFont(new Font("SansSerif", Font.PLAIN, 24));  // 글자 크기 키움
+        sleepLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 40)); // 오른쪽 여백 주기
+
+        JLabel qualityLabel = new JLabel("<html>이날의 감정: <b>" + emotion + "</b></html>", SwingConstants.RIGHT);
+        qualityLabel.setFont(new Font("SansSerif", Font.PLAIN, 24));  // 글자 크기 키움
+        qualityLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 40)); // 오른쪽 여백 주기
 
         contentPanel.add(sleepLabel);
         contentPanel.add(qualityLabel);
 
-        add(contentPanel, BorderLayout.CENTER);
+        centerPanel.add(contentPanel, BorderLayout.CENTER);
+        add(centerPanel, BorderLayout.CENTER);
     }
+
+    // 원형 상태 표현하는 내부 클래스
+    static class CircleStatusPanel extends JPanel {
+        private final String sleepQuality;
+
+        public CircleStatusPanel(String quality) {
+            this.sleepQuality = quality;
+            setPreferredSize(new Dimension(300, 300));
+            setOpaque(false);
+        }
+
+        // 수면의 질 원 안에 출력
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            // 색 결정
+            Color ringColor;
+            switch (sleepQuality) {
+                case "좋음":
+                    ringColor = new Color(0, 100, 0);
+                    break;
+                case "보통":
+                    ringColor = Color.ORANGE;
+                    break;
+                case "나쁨":
+                    ringColor = new Color(139, 0, 0);
+                    break;
+                default:
+                    ringColor = Color.GRAY;
+            }
+
+            int size = 150;
+            int x = (getWidth() - size) / 2;
+            int y = (getHeight() - size) / 2+5;
+
+            g2.setStroke(new BasicStroke(15));
+            g2.setColor(ringColor);
+            g2.drawOval(x, y, size, size);
+
+            // 가운데 텍스트
+            g2.setFont(new Font("SansSerif", Font.BOLD, 32));
+            FontMetrics fm = g2.getFontMetrics();
+            int textWidth = fm.stringWidth(sleepQuality);
+            int textHeight = fm.getAscent();
+
+            g2.setColor(Color.BLACK);
+            g2.drawString(sleepQuality, getWidth() / 2 - textWidth / 2, getHeight() / 2 + textHeight / 4+5);
+
+            // 원 위에 '수면의 질' 텍스트
+            g2.setFont(new Font("SansSerif", Font.PLAIN, 20));
+            String label = "수면의 질";
+            FontMetrics fmLabel = g2.getFontMetrics();
+            int labelWidth = fmLabel.stringWidth(label);
+            g2.drawString(label, getWidth() / 2 - labelWidth / 2, y - 20);  // 원 위에 표시
+        }
+    }
+
+    //public static void main(String[] args) {
+        // 예시 데이터
+        //String day = "2025년 5월 19일";
+        //String sleephour = "08";
+        //String sleepminute="27";
+        //String sleepQuality = "좋음";
+        //String emotion = "좋음";
+
+        // 스윙 UI는 EDT(Event Dispatch Thread)에서 실행하는 게 안정적
+        //SwingUtilities.invokeLater(() -> {
+            //DailyInfo dialog = new DailyInfo(day, sleephour,sleepminute, sleepQuality, emotion);
+            //dialog.setVisible(true);
+        //});
+    //}
 }
