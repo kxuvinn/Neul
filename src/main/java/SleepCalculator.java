@@ -1,5 +1,6 @@
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 
 public class SleepCalculator {
 
@@ -33,5 +34,27 @@ public class SleepCalculator {
         long hours = duration.toHours();
         long minutes = duration.toMinutesPart(); // Java 9 이상에서 사용 가능
         return hours + "시간 " + minutes + "분";
+    }
+
+    /**
+     * 수면 기록 Map<String, Duration>을 기준으로 평균을 계산합니다.
+     * (AnalysisPanel 그래프 기준과 동일한 방식)
+     *
+     * @param sleepMap 요일 → 수면시간 매핑
+     * @return 평균 수면 시간 (Duration 형태)
+     */
+    public static Duration calculateAverageFromMap(Map<String, Duration> sleepMap) {
+        long totalMinutes = 0;
+        int count = 0;
+
+        for (Duration d : sleepMap.values()) {
+            if (d != null && !d.isZero()) {
+                totalMinutes += d.toMinutes();
+                count++;
+            }
+        }
+
+        if (count == 0) return Duration.ZERO;
+        return Duration.ofMinutes(totalMinutes / count);
     }
 }

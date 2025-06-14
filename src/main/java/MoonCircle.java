@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+
 public class MoonCircle extends JPanel {
     public MoonCircle() {
         setPreferredSize(new Dimension(50, 50));
@@ -27,4 +28,3 @@ public class MoonCircle extends JPanel {
         g2d.drawOval(0, 0, 40, 40);
     }
 }
-

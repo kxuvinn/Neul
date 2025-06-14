@@ -44,7 +44,7 @@ public class AnalysisPanel extends JPanel {
         titleLabel.setBounds(0, 50, 1440, 80);
         add(titleLabel);
 
-        //홈버튼 추가
+        // 홈버튼 추가
         ImageIcon originalIcon = new ImageIcon("src/main/resources/images/img.png");
         Image resizedImage = originalIcon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
         ImageIcon resizedIcon = new ImageIcon(resizedImage);
@@ -55,20 +55,50 @@ public class AnalysisPanel extends JPanel {
         homeButton.setBorderPainted(false);
         homeButton.setFocusPainted(false);
         homeButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-        homeButton.addActionListener(e -> {
-            screenController.navigateTo("main");
-        });
+        homeButton.addActionListener(e -> screenController.navigateTo("main"));
         add(homeButton);
-
 
         // ---------- Graph Panel ----------
         JPanel graphPanel = new JPanel() {
+            @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 drawSleepGraph(g);
             }
+
+            // ✅ 마우스가 그래프 위에 있을 때만 툴팁 표시
+            @Override
+            public String getToolTipText(MouseEvent e) {
+                int mouseX = e.getX();
+                int mouseY = e.getY();
+                int baseX = 50;
+                int baseY = 570;
+                int barWidth = 30;
+                int space = 70;
+
+                Map<String, Duration> sleepMap = sleepDataService.getWeeklySleepGraph(userId);
+                for (int i = 0; i < 7; i++) {
+                    int x = baseX + i * space;
+                    Duration d = sleepMap.getOrDefault(getDayString(i), Duration.ZERO);
+                    int barHeight = (int) Math.round(d.toMinutes() / 2.5);
+                    int barTopY = baseY - barHeight;
+
+                    if (mouseX >= x && mouseX <= x + barWidth && mouseY >= barTopY && mouseY <= baseY) {
+                        if (!d.isZero()) {
+                            long h = d.toHours();
+                            long m = d.toMinutesPart();
+                            return getDayString(i) + ": " + h + "시간 " + m + "분 수면";
+                        } else {
+                            return getDayString(i) + ": 수면 기록 없음";
+                        }
+                    }
+                }
+                return null;
+            }
         };
+        graphPanel.setToolTipText("");
+        ToolTipManager.sharedInstance().registerComponent(graphPanel);
+
         graphPanel.setBounds(100, 160, 580, 650);
         graphPanel.setBackground(Color.WHITE);
         graphPanel.setLayout(null);
@@ -86,34 +116,35 @@ public class AnalysisPanel extends JPanel {
             JLabel dayLabel = new JLabel(days[i], SwingConstants.CENTER);
             dayLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
             dayLabel.setBounds(45 + i * 70, 110, 60, 20);
-            dayLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); // 마우스 손가락 모양
+            dayLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
             dayLabel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    LocalDate date = LocalDate.now().with(DayOfWeek.MONDAY).plusDays(index); // 해당 요일 계산
                     if (currentPopup != null && currentPopup.isDisplayable()) {
                         currentPopup.setVisible(false);
                         currentPopup.dispose();
                         currentPopup = null;
                     }
 
+                    LocalDate today = LocalDate.now();
+                    int diffToMonday = today.getDayOfWeek().getValue() - DayOfWeek.MONDAY.getValue();
+                    LocalDate monday = today.minusDays(diffToMonday);
+                    LocalDate date = monday.plusDays(index);
+
                     SleepRecord record = sleepDataService.getRecordByDate(userId, date);
                     if (record != null) {
                         String hour = String.valueOf(record.getSleepDuration().toHours());
                         String minute = String.valueOf(record.getSleepDuration().toMinutesPart());
                         String mood = record.getMood();
-
                         String quality = sleepDataManager.getSleepQualityByDate(userId, date);
-
-                        currentPopup = new DailyInfo(days[index], hour, minute, quality, mood);
+                        currentPopup = new DailyInfo(date, hour, minute, quality, mood);
                         currentPopup.setVisible(true);
                     } else {
                         JOptionPane.showMessageDialog(null, days[index] + "의 기록이 없습니다.");
                     }
                 }
             });
-
             graphPanel.add(dayLabel);
         }
 
@@ -129,7 +160,6 @@ public class AnalysisPanel extends JPanel {
         infoTitle.setBounds(20, 40, 500, 40);
         infoPanel.add(infoTitle);
 
-        // Info Content Box
         JPanel infoBox = new JPanel(null);
         infoBox.setBounds(20, 90, 540, 250);
         infoBox.setBackground(Color.WHITE);
@@ -145,24 +175,17 @@ public class AnalysisPanel extends JPanel {
 
         List<String> goodThings = infoService.getRandomGoodThings();
         List<String> badThings = infoService.getRandomBadThings();
-
-
         StringBuilder infoText = new StringBuilder();
         infoText.append("좋은 요소\n");
-        for (String item : goodThings) {
-            infoText.append("• ").append(item).append("\n");
-        }
-
+        for (String item : goodThings) infoText.append("• ").append(item).append("\n");
         infoText.append("\n나쁜 요소\n");
-        for (String item : badThings) {
-            infoText.append("• ").append(item).append("\n");
-        }
+        for (String item : badThings) infoText.append("• ").append(item).append("\n");
 
         infoArea.setText(infoText.toString());
         infoArea.setBounds(10, 25, 520, 210);
         infoBox.add(infoArea);
 
-        // Emotion Comment
+        // 감정 코멘트
         JPanel commentBox = new JPanel(null);
         commentBox.setBounds(20, 420, 540, 180);
         commentBox.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
@@ -197,8 +220,7 @@ public class AnalysisPanel extends JPanel {
 
         for (int i = 0; i < days.length; i++) {
             Duration d = sleepMap.getOrDefault(days[i], Duration.ZERO);
-            int barHeight = (int) (d.toMinutes() / 2.5);
-
+            int barHeight = (int) Math.round(d.toMinutes() / 2.5);
             g.setColor(Color.BLACK);
             g.fillRect(baseX + i * space, baseY - barHeight, barWidth, barHeight);
         }
@@ -206,7 +228,21 @@ public class AnalysisPanel extends JPanel {
         // 평균선
         g.setColor(new Color(160, 140, 255));
         int avgHeight = (int) (averageDuration.toMinutes() / 2.5);
-        g.drawLine(baseX, baseY - avgHeight, baseX + days.length * space, baseY - avgHeight);
-        g.drawString("평균", baseX + days.length * space + 5, baseY - avgHeight - 2);
+        int lineY = baseY - avgHeight;
+        g.drawLine(baseX, lineY, baseX + days.length * space, lineY);
+
+        long h = averageDuration.toHours();
+        long m = averageDuration.toMinutesPart();
+        String avgLabel = "평균 (" + h + "시간 " + m + "분)";
+        FontMetrics fm = g.getFontMetrics();
+        int labelWidth = fm.stringWidth(avgLabel);
+        int labelX = baseX + days.length * space - labelWidth;
+        int labelY = lineY - 6;
+        g.drawString(avgLabel, labelX, labelY);
+    }
+
+    private String getDayString(int index) {
+        String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+        return days[index];
     }
 }

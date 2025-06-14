@@ -61,7 +61,7 @@ public class SleepDataService {
         saveData();
     }
 
-    // SleepRecord에서 특정 날짜 기록 조회 -> SleepRecord 클래스 전체로 반환 (RecordPanel 팝업용)
+    // 특정 날짜의 기록 조회
     public SleepRecord getRecordByDate(String userId, LocalDate date) {
         List<SleepRecord> records = userSleepMap.getOrDefault(userId, new ArrayList<>());
         return records.stream()
@@ -70,7 +70,7 @@ public class SleepDataService {
                 .orElse(null);
     }
 
-    //  SleepRecord에서 수면 시간 조회 -> sleepDuration 리스트 형태로 반환 (SleepCalculation 평균 수면 시간 계산 용)
+    // 최근 7일 수면 시간 리스트 반환
     public List<Duration> getLast7DaysSleepDurations(String userId) {
         List<SleepRecord> records = userSleepMap.getOrDefault(userId, new ArrayList<>());
         LocalDate now = LocalDate.now();
@@ -84,22 +84,24 @@ public class SleepDataService {
         return durations;
     }
 
-    // 평균 계산
+    // 주간 평균 수면 시간 반환
     public Duration getWeeklyAverage(String userId) {
-        List<Duration> durations = getLast7DaysSleepDurations(userId); // 기존 메서드 재사용!
+        List<Duration> durations = getLast7DaysSleepDurations(userId);
         return SleepCalculator.calculateAverage(durations);
     }
 
-    // SleepRecord에서 수면 시간 조회 -> 그래프용 요일-수면시간 Map 형태로 반환 (AnalysisPanel 수면시간 그래프 용)
+    // 그래프용: 요일별 수면시간 Map 반환
     public Map<String, Duration> getWeeklySleepGraph(String userId) {
+        loadData(); // 최신 데이터 반영
+
         Map<String, Duration> graphData = new LinkedHashMap<>();
         List<SleepRecord> records = userSleepMap.getOrDefault(userId, new ArrayList<>());
-        LocalDate now = LocalDate.now();
-        LocalDate monday = now.with(DayOfWeek.MONDAY);
+
+        LocalDate monday = LocalDate.now().with(DayOfWeek.MONDAY);
 
         for (int i = 0; i < 7; i++) {
-            LocalDate targetDate = now.plusDays(i);
-            String day = targetDate.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH); // "Mon", "Tue", ...
+            LocalDate targetDate = monday.plusDays(i);
+            String day = targetDate.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH); // Mon, Tue, ...
             Duration duration = records.stream()
                     .filter(r -> r.getDate().equals(targetDate))
                     .map(SleepRecord::getSleepDuration)
@@ -111,12 +113,13 @@ public class SleepDataService {
         return graphData;
     }
 
-    // SleepRrcord에서 수면 시간 조회 -> duration 객체로 반환 (SleepDataManager 수면의 질 계산 용)
+    // 날짜별 수면 시간 조회 (Duration 객체로)
     public Duration getSleepDurationByDate(String userId, LocalDate date) {
         SleepRecord r = getRecordByDate(userId, date);
         return r != null ? r.getSleepDuration() : Duration.ZERO;
     }
 
+    // 날짜별 감정 조회
     public String getMoodByDate(String userId, LocalDate date) {
         List<SleepRecord> records = userSleepMap.getOrDefault(userId, new ArrayList<>());
         for (SleepRecord record : records) {

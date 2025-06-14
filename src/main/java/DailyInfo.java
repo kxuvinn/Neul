@@ -1,9 +1,13 @@
 import javax.swing.*;
 import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Date;
 
 public class DailyInfo extends JDialog {
-    public DailyInfo(String day, String sleephour, String sleepminute, String sleepQuality, String emotion) {        // 날짜, 취침시간, 수면의 질 넘겨받기
 
+    // 날짜, 취침시간, 수면의 질 넘겨받기
+    public DailyInfo(LocalDate date, String hour, String minute, String sleepQuality, String emotion) {
         setTitle("Daily Information");    // 창 이름
         setSize(600, 400);    // 창 크기
         setResizable(false);
@@ -15,7 +19,8 @@ public class DailyInfo extends JDialog {
         getContentPane().setBackground(backgroundColor);
 
         // 날짜
-        JLabel dateLabel = new JLabel(day);
+        String formattedDate = formatDate(date);
+        JLabel dateLabel = new JLabel(formattedDate);
         dateLabel.setFont(new Font("SansSerif", Font.BOLD, 30));  // 글씨체 변경
         dateLabel.setHorizontalAlignment(SwingConstants.LEFT);   // 왼쪽
         dateLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 0));   // 여백
@@ -36,20 +41,27 @@ public class DailyInfo extends JDialog {
         contentPanel.setBackground(backgroundColor);  // 바탕색 설정
 
         JLabel sleepLabel = new JLabel(
-                "<html><b><span style='color:#4B0082'>" + sleephour + "시간 " + sleepminute + "분</span></b> 취침</html>",
+                "<html><b><span style='color:#4B0082'>" + hour + "시간 " + minute + "분</span></b> 취침</html>",
                 SwingConstants.RIGHT);
         sleepLabel.setFont(new Font("SansSerif", Font.PLAIN, 24));  // 글자 크기 키움
         sleepLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 40)); // 오른쪽 여백 주기
 
         JLabel qualityLabel = new JLabel("<html>이날의 감정: <b>" + emotion + "</b></html>", SwingConstants.RIGHT);
-        qualityLabel.setFont(new Font("SansSerif", Font.PLAIN, 24));  // 글자 크기 키움
-        qualityLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 40)); // 오른쪽 여백 주기
+        qualityLabel.setFont(new Font("SansSerif", Font.PLAIN, 24));
+        qualityLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 40));
 
         contentPanel.add(sleepLabel);
         contentPanel.add(qualityLabel);
 
         centerPanel.add(contentPanel, BorderLayout.CENTER);
         add(centerPanel, BorderLayout.CENTER);
+    }
+
+    // 날짜 포맷 변환 (예: 05.19 Mon)
+    private String formatDate(LocalDate date) {
+        Date utilDate = java.sql.Date.valueOf(date);
+        SimpleDateFormat sdf = new SimpleDateFormat("MM.dd E", java.util.Locale.ENGLISH);
+        return sdf.format(utilDate);
     }
 
     // 원형 상태 표현하는 내부 클래스
@@ -62,7 +74,6 @@ public class DailyInfo extends JDialog {
             setOpaque(false);
         }
 
-        // 수면의 질 원 안에 출력
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
@@ -87,7 +98,7 @@ public class DailyInfo extends JDialog {
 
             int size = 150;
             int x = (getWidth() - size) / 2;
-            int y = (getHeight() - size) / 2+5;
+            int y = (getHeight() - size) / 2 + 5;
 
             g2.setStroke(new BasicStroke(15));
             g2.setColor(ringColor);
@@ -98,31 +109,15 @@ public class DailyInfo extends JDialog {
             FontMetrics fm = g2.getFontMetrics();
             int textWidth = fm.stringWidth(sleepQuality);
             int textHeight = fm.getAscent();
-
             g2.setColor(Color.BLACK);
-            g2.drawString(sleepQuality, getWidth() / 2 - textWidth / 2, getHeight() / 2 + textHeight / 4+5);
+            g2.drawString(sleepQuality, getWidth() / 2 - textWidth / 2, getHeight() / 2 + textHeight / 4 + 5);
 
-            // 원 위에 '수면의 질' 텍스트
+            // 원 위에 텍스트
             g2.setFont(new Font("SansSerif", Font.PLAIN, 20));
             String label = "수면의 질";
             FontMetrics fmLabel = g2.getFontMetrics();
             int labelWidth = fmLabel.stringWidth(label);
-            g2.drawString(label, getWidth() / 2 - labelWidth / 2, y - 20);  // 원 위에 표시
+            g2.drawString(label, getWidth() / 2 - labelWidth / 2, y - 20);
         }
     }
-
-    //public static void main(String[] args) {
-        // 예시 데이터
-        //String day = "2025년 5월 19일";
-        //String sleephour = "08";
-        //String sleepminute="27";
-        //String sleepQuality = "좋음";
-        //String emotion = "좋음";
-
-        // 스윙 UI는 EDT(Event Dispatch Thread)에서 실행하는 게 안정적
-        //SwingUtilities.invokeLater(() -> {
-            //DailyInfo dialog = new DailyInfo(day, sleephour,sleepminute, sleepQuality, emotion);
-            //dialog.setVisible(true);
-        //});
-    //}
 }

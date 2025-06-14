@@ -1,11 +1,27 @@
 {
-  "kimsubin" : [ {
-    "date" : "2025-05-24",
-    "mood" : "나쁨",
-    "sleepDuration" : "8시간 5분"
-  }, {
-    "date" : "2025-05-26",
-    "mood" : "보통",
+  "neul" : [ {
+    "date" : "2025-06-04",
+    "mood" : "좋음",
     "sleepDuration" : "8시간 0분"
-  } ]
+  }, {
+    "date" : "2025-06-09",
+    "mood" : "보통",
+    "sleepDuration" : "5시간 0분"
+  }, {
+    "date" : "2025-06-10",
+    "mood" : "나쁨",
+    "sleepDuration" : "5시간 0분"
+  }, {
+    "date" : "2025-06-11",
+    "mood" : "좋음",
+    "sleepDuration" : "9시간 0분"
+  }, {
+    "date" : "2025-06-12",
+    "mood" : "보통",
+    "sleepDuration" : "5시간 0분"
+  },{
+    "date" : "2025-06-13",
+    "mood" : "보통",
+    "sleepDuration" : "3시간 0분"
+  }]
 }
