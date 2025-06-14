@@ -1,0 +1,23 @@
+# === Gradle build directories ===
+.gradle/
+build/
+
+# === Java compiled files ===
+*.class
+
+# === IntelliJ IDEA ===
+.idea/
+*.iml
+out/
+
+# === Eclipse ===
+.project
+.classpath
+.settings/
+
+# === VSCode ===
+.vscode/
+
+# === OS generated ===
+.DS_Store
+Thumbs.db
