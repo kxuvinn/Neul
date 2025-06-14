@@ -6,9 +6,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class SleepInputPanel extends JPanel {
-
     private ScreenController controller;
-
     private AnalogClock clock;
     private JLabel digitalClockLabel;
     private Timer timer;
@@ -19,16 +17,13 @@ public class SleepInputPanel extends JPanel {
         setLayout(null);
         setBackground(new Color(91, 89, 153));
 
-        // 상단 NEUL 로고
         JLabel title = new JLabel("NEUL");
         title.setFont(new Font("Serif", Font.BOLD, 80));
         title.setForeground(Color.WHITE);
         title.setBounds(620, 100, 400, 100);
         add(title);
 
-        // 상단 패널
         String[] titles = {"I will sleep at..", "I will wake up at..", "sleep now.."};
-
         int[] xPositions = {230, 580, 930};
 
         for (int i = 0; i < 3; i++) {
@@ -43,19 +38,16 @@ public class SleepInputPanel extends JPanel {
                 }
             };
             roundedPanel.setLayout(new BorderLayout());
-            roundedPanel.setBounds(xPositions[i], 270, 320, 60); // 아래 패널 위치와 width에 정확히 일치
+            roundedPanel.setBounds(xPositions[i], 270, 320, 60);
             roundedPanel.setOpaque(false);
 
             JLabel label = new JLabel(titles[i], SwingConstants.CENTER);
             label.setFont(new Font("SansSerif", Font.BOLD, 22));
             label.setForeground(new Color(44, 33, 87));
             roundedPanel.add(label, BorderLayout.CENTER);
-
             add(roundedPanel);
         }
 
-
-        // 홈 버튼
         try {
             ImageIcon homeIcon = new ImageIcon(getClass().getClassLoader().getResource("images/img.png"));
             Image scaled = homeIcon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
@@ -71,132 +63,60 @@ public class SleepInputPanel extends JPanel {
             System.err.println("홈 버튼 이미지 로드 실패: " + e.getMessage());
         }
 
-        // 왼쪽 패널: SleepRecommendationPanel
+        String[] hourArray = makeHourArray();
+        String[] minuteArray = makeMinuteArray();
+
         JPanel sleepAtPanel = new JPanel(null);
         sleepAtPanel.setBackground(Color.WHITE);
         sleepAtPanel.setBounds(230, 350, 320, 400);
+        sleepAtPanel.add(new JLabel(new ImageIcon(getClass().getResource("/images/sleep2.gif")))).setBounds(75, 50, 170, 170);
 
-        //gif 삽입
-        ImageIcon sleepGif = new ImageIcon(getClass().getResource("/images/sleep2.gif"));
-        JLabel sleepImageLabel = new JLabel(sleepGif);
-        sleepImageLabel.setBounds(75, 50, 170, 170);
-        sleepAtPanel.add(sleepImageLabel);
+        JComboBox<String> sleepHourCombo = new JComboBox<>(hourArray);
+        JComboBox<String> sleepMinCombo = new JComboBox<>(minuteArray);
+        sleepHourCombo.setFont(new Font("SansSerif", Font.BOLD, 18));
+        sleepMinCombo.setFont(new Font("SansSerif", Font.BOLD, 18));
+        sleepHourCombo.setBounds(50, 240, 100, 40);
+        sleepMinCombo.setBounds(170, 240, 100, 40);
+        sleepAtPanel.add(sleepHourCombo);
+        sleepAtPanel.add(sleepMinCombo);
 
-        //사용자 입력 시계 삽입
-        JSpinner sleepHourSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 23, 1));
-        sleepHourSpinner.setEditor(new JSpinner.NumberEditor(sleepHourSpinner, "00"));
-        ((JSpinner.DefaultEditor) sleepHourSpinner.getEditor()).getTextField().setEditable(false);
-        JSpinner sleepMinSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 59, 1));
-        sleepMinSpinner.setEditor(new JSpinner.NumberEditor(sleepMinSpinner, "00"));
-        ((JSpinner.DefaultEditor) sleepMinSpinner.getEditor()).getTextField().setEditable(false);
-
-        sleepHourSpinner.setFont(new Font("SansSerif", Font.BOLD, 18));
-        sleepMinSpinner.setFont(new Font("SansSerif", Font.BOLD, 18));
-        sleepHourSpinner.setBounds(50, 240, 100, 40);
-        sleepMinSpinner.setBounds(170, 240, 100, 40);
-
-        sleepAtPanel.add(sleepHourSpinner);
-        sleepAtPanel.add(sleepMinSpinner);
-
-        JButton sleepNext = new JButton("▶ Play") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(getBackground());
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
-                g2.dispose();
-                super.paintComponent(g);
-            }
-
-            @Override
-            protected void paintBorder(Graphics g) {
-            }
-        };
-        sleepNext.setFont(new Font("SansSerif", Font.BOLD, 16));
-        sleepNext.setForeground(Color.WHITE);
-        sleepNext.setBackground(new Color(0x2C2157));
-        sleepNext.setContentAreaFilled(false);
-        sleepNext.setFocusPainted(false);
-        sleepNext.setBorderPainted(false);
-        sleepNext.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
+        JButton sleepNext = createPlayButton();
         sleepNext.setBounds(110, 330, 100, 40);
-        sleepNext.setFont(new Font("SansSerif", Font.PLAIN, 14));
         sleepNext.addActionListener(e -> {
-            String hour = String.format("%02d", (int)sleepHourSpinner.getValue());
-            String minute = String.format("%02d", (int)sleepMinSpinner.getValue());
-            SleepTime sleepTime = new SleepTime(hour + ":" + minute);
-            controller.showSleepRecommendation(sleepTime);
+            String hour = (String) sleepHourCombo.getSelectedItem();
+            String minute = (String) sleepMinCombo.getSelectedItem();
+            controller.showSleepRecommendation(new SleepTime(hour + ":" + minute));
         });
         sleepAtPanel.add(sleepNext);
         add(sleepAtPanel);
 
-
-        // 가운데 패널: WakeRecommendationPanel
         JPanel wakeUpPanel = new JPanel(null);
         wakeUpPanel.setBackground(Color.WHITE);
         wakeUpPanel.setBounds(580, 350, 320, 400);
+        wakeUpPanel.add(new JLabel(new ImageIcon(getClass().getResource("/images/wake2.gif")))).setBounds(75, 50, 170, 170);
 
-        //gif 삽입
-        ImageIcon wakeGif = new ImageIcon(getClass().getResource("/images/wake2.gif"));
-        JLabel wakeImageLabel = new JLabel(wakeGif);
-        wakeImageLabel.setBounds(75, 50, 170, 170);
-        wakeUpPanel.add(wakeImageLabel);
+        JComboBox<String> wakeHourCombo = new JComboBox<>(hourArray);
+        JComboBox<String> wakeMinCombo = new JComboBox<>(minuteArray);
+        wakeHourCombo.setFont(new Font("SansSerif", Font.BOLD, 18));
+        wakeMinCombo.setFont(new Font("SansSerif", Font.BOLD, 18));
+        wakeHourCombo.setBounds(50, 240, 100, 40);
+        wakeMinCombo.setBounds(170, 240, 100, 40);
+        wakeUpPanel.add(wakeHourCombo);
+        wakeUpPanel.add(wakeMinCombo);
 
-        //사용자 입력 시계
-        JSpinner wakeHourSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 23, 1));
-        wakeHourSpinner.setEditor(new JSpinner.NumberEditor(wakeHourSpinner, "00"));
-        ((JSpinner.DefaultEditor) wakeHourSpinner.getEditor()).getTextField().setEditable(false);
-        JSpinner wakeMinSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 59, 1));
-        wakeMinSpinner.setEditor(new JSpinner.NumberEditor(wakeMinSpinner, "00"));
-        ((JSpinner.DefaultEditor) wakeMinSpinner.getEditor()).getTextField().setEditable(false);
-        wakeHourSpinner.setFont(new Font("SansSerif", Font.BOLD, 18));
-        wakeMinSpinner.setFont(new Font("SansSerif", Font.BOLD, 18));
-        wakeHourSpinner.setBounds(50, 240, 100, 40);
-        wakeMinSpinner.setBounds(170, 240, 100, 40);
-        wakeUpPanel.add(wakeHourSpinner);
-        wakeUpPanel.add(wakeMinSpinner);
-
-        JButton wakeNext = new JButton("▶ Play") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(getBackground());
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
-                g2.dispose();
-                super.paintComponent(g);
-            }
-
-            @Override
-            protected void paintBorder(Graphics g) {
-            }
-        };
-        wakeNext.setFont(new Font("SansSerif", Font.BOLD, 16));
-        wakeNext.setForeground(Color.WHITE);
-        wakeNext.setBackground(new Color(0x2C2157)); // 진한 보라
-        wakeNext.setContentAreaFilled(false);
-        wakeNext.setFocusPainted(false);
-        wakeNext.setBorderPainted(false);
-        wakeNext.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
+        JButton wakeNext = createPlayButton();
         wakeNext.setBounds(110, 330, 100, 40);
-        wakeNext.setFont(new Font("SansSerif", Font.PLAIN, 14));
         wakeNext.addActionListener(e -> {
-            String hour = String.format("%02d", (int)wakeHourSpinner.getValue());  // "04"
-            String minute = String.format("%02d", (int)wakeMinSpinner.getValue()); // "00"
-            WakeTime wakeTime = new WakeTime(hour + ":" + minute);  // "04:00"
-            controller.showWakeRecommendation(wakeTime);
+            String hour = (String) wakeHourCombo.getSelectedItem();
+            String minute = (String) wakeMinCombo.getSelectedItem();
+            controller.showWakeRecommendation(new WakeTime(hour + ":" + minute));
         });
         wakeUpPanel.add(wakeNext);
         add(wakeUpPanel);
 
-        // 오른쪽 패널: SleepCyclePanel
         JPanel clockPanel = new JPanel(null);
         clockPanel.setBackground(Color.WHITE);
         clockPanel.setBounds(930, 350, 320, 400);
-
         JPanel clockContainer = new JPanel(new BorderLayout());
         clockContainer.setOpaque(false);
         clockContainer.setBounds(20, 40, 280, 280);
@@ -210,7 +130,17 @@ public class SleepInputPanel extends JPanel {
         clockContainer.add(digitalClockLabel, BorderLayout.SOUTH);
         clockPanel.add(clockContainer);
 
-        JButton playNow = new JButton("▶ Play") {
+        JButton playNow = createPlayButton();
+        playNow.setBounds(110, 330, 100, 40);
+        playNow.addActionListener(e -> controller.showSleepCycle());
+        clockPanel.add(playNow);
+
+        add(clockPanel);
+        startClock();
+    }
+
+    private JButton createPlayButton() {
+        JButton button = new JButton("▶ Play") {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -222,32 +152,23 @@ public class SleepInputPanel extends JPanel {
             }
 
             @Override
-            protected void paintBorder(Graphics g) {
-                // 테두리 없애기
-            }
+            protected void paintBorder(Graphics g) {}
         };
-        playNow.setFont(new Font("SansSerif", Font.BOLD, 16));
-        playNow.setForeground(Color.WHITE);
-        playNow.setBackground(new Color(0x2C2157)); // 진한 보라
-        playNow.setContentAreaFilled(false);
-        playNow.setFocusPainted(false);
-        playNow.setBorderPainted(false);
-        playNow.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        playNow.setBounds(110, 330, 100, 40);
-        playNow.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        playNow.addActionListener(e -> {
-            controller.showSleepCycle();
-        });
-        clockPanel.add(playNow);
+        button.setFont(new Font("SansSerif", Font.BOLD, 16));
+        button.setForeground(Color.WHITE);
+        button.setBackground(new Color(0x2C2157)); // 진한 보라
+        button.setContentAreaFilled(false);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        add(clockPanel);
-        startClock();
+        return button;
     }
 
     private String[] makeHourArray() {
         String[] hours = new String[24];
-        for (int i = 0; i < 24; i++) hours[i] = String.valueOf(i);
+        for (int i = 0; i < 24; i++) hours[i] = String.format("%02d", i);
         return hours;
     }
 
