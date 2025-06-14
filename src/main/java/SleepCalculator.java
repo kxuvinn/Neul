@@ -16,11 +16,18 @@ public class SleepCalculator {
         }
 
         long totalSeconds = 0;
+        int count = 0;
+
         for (Duration d : durations) {
-            totalSeconds += d.getSeconds();
+            if (d != null && !d.isZero()) {
+                totalSeconds += d.getSeconds();
+                count++;
+            }
         }
 
-        long averageSeconds = totalSeconds / durations.size();
+        if (count == 0) return Duration.ZERO;
+
+        long averageSeconds = Math.round((double) totalSeconds / count);
         return Duration.ofSeconds(averageSeconds);
     }
 
