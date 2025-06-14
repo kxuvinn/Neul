@@ -1,3 +1,5 @@
+// 10조 - 2415028 김수빈
+// SleepRecord.java
 // 사용자가 TodayPanel에서 입력한 수면 정보와 감정을 날짜에 따라 저장하는 클래스
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -10,41 +12,43 @@ public class SleepRecord {
     private Duration sleepDuration;
     private String mood;
 
-    public SleepRecord() {} // 기본 생성자 (필수)
+    public SleepRecord() {}
 
-    // 오늘 날짜로 기록
+    // 오늘 날짜로 수면 기록을 생성하는 생성자
     public SleepRecord(Duration sleepDuration, String mood) {
         this(LocalDate.now(), sleepDuration, mood);
     }
 
-    // 날짜 지정해서 기록
+    // 특정 날짜로 수면 기록을 생성하는 생성자
     public SleepRecord(LocalDate date, Duration sleepDuration, String mood) {
         this.date = date;
         this.sleepDuration = sleepDuration;
         this.mood = mood;
     }
 
+    // 날짜 getter
     public LocalDate getDate() {
         return date;
     }
 
+    // 날짜 setter
     public void setDate(LocalDate date) {
         this.date = date;
     }
 
-    // 내부 로직에서 사용할 Duration 객체 반환용
+     // Duration 객체 그대로 반환
     @JsonIgnore
     public Duration getSleepDuration() {
         return sleepDuration;
     }
 
-    // 문자열 → Duration 역변환용
+    // JSON에서 역직렬화 시 Duration 객체를 직접 설정
     @JsonProperty("sleepDuration")
     public void setSleepDurationRaw(Duration duration) {
         this.sleepDuration = duration;
     }
 
-    // 사용자에게 보여줄 문자열 반환용
+    // Duration을 "X시간 Y분" 형식으로 포맷하여 문자열로 반환 (사용자 표시용)
     @JsonProperty("sleepDuration")
     public String getSleepDurationFormatted() {
         if (sleepDuration == null) return "";
@@ -53,6 +57,7 @@ public class SleepRecord {
         return String.format("%d시간 %d분", hours, minutes);
     }
 
+    // "X시간 Y분" 형식의 문자열을 Duration으로 파싱하여 설정 (문자열 → Duration)
     @JsonProperty("sleepDuration")
     public void setSleepDurationFormatted(String durationStr) {
         try {
@@ -75,14 +80,17 @@ public class SleepRecord {
         }
     }
 
+    // 감정 상태 반환
     public String getMood() {
         return mood;
     }
 
+    // 감정 상태 설정
     public void setMood(String mood) {
         this.mood = mood;
     }
 
+    // 수면 기록을 문자열로 보기 좋게 출력
     @Override
     public String toString() {
         return date + " | " + getSleepDurationFormatted() + " | 감정: " + mood;
