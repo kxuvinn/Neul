@@ -9,28 +9,28 @@ public class SignupPanel extends JPanel {
         this.controller = controller;
 
         setLayout(null);
-        setBackground(new Color(91, 89, 153)); // 짙은 보라 배경
+        setBackground(new Color(91, 89, 153)); 
 
         // NEUL 텍스트
         JLabel title = new JLabel("NEUL");
         title.setFont(new Font("Serif", Font.BOLD, 60));
-        title.setForeground(new Color(0xFFE23D)); // 금색
+        title.setForeground(new Color(0xFFE23D)); 
         title.setBounds(620, 60, 200, 80);
         add(title);
 
-        // 달 원 컴포넌트
+        
         MoonCircle moon = new MoonCircle();
         moon.setBounds(800, 70, 50, 50);
         add(moon);
 
-        // "회원가입" 타이틀
+        
         JLabel registerLabel = new JLabel("회원가입", SwingConstants.CENTER);
         registerLabel.setFont(new Font("SansSerif", Font.BOLD, 36));
         registerLabel.setForeground(Color.WHITE);
         registerLabel.setBounds(620, 180, 200, 50);
         add(registerLabel);
 
-        // 회원가입 폼 박스
+       
         JPanel formPanel = new JPanel();
         formPanel.setLayout(null);
         formPanel.setBackground(Color.WHITE);
@@ -62,7 +62,7 @@ public class SignupPanel extends JPanel {
         registerBtn.setBackground(new Color(40, 40, 40));
         registerBtn.setForeground(Color.WHITE);
 
-        // 버튼 이벤트 연결
+        // 이벤트트
         registerBtn.addActionListener(e -> {
             String id = idField.getText().trim();
             String pw = new String(pwField.getPassword());
@@ -78,7 +78,7 @@ public class SignupPanel extends JPanel {
                 return;
             }
 
-            boolean success = UserService.getInstance().register(id, pw); // 싱글톤 기반 예시
+            boolean success = UserService.getInstance().register(id, pw); 
 
             if (success) {
                 JOptionPane.showMessageDialog(this, "회원가입이 완료되었습니다.");
@@ -98,14 +98,6 @@ public class SignupPanel extends JPanel {
         formPanel.add(registerBtn);
     }
 
-    // 테스트용 실행
-    //public static void main(String[] args) {
-        //JFrame frame = new JFrame("Register - NEUL");
-        //frame.setSize(1440, 1024);
-        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //frame.setLocationRelativeTo(null);
-        //frame.add(new SignupPanel());
-        //frame.setVisible(true);
-    //}
+
 }
 
