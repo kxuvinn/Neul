@@ -157,7 +157,7 @@ public class SleepInputPanel extends JPanel {
 
         button.setFont(new Font("SansSerif", Font.BOLD, 16));
         button.setForeground(Color.WHITE);
-        button.setBackground(new Color(0x2C2157)); // 진한 보라
+        button.setBackground(new Color(0x2C2157)); 
         button.setContentAreaFilled(false);
         button.setFocusPainted(false);
         button.setBorderPainted(false);
