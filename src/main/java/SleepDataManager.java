@@ -8,11 +8,6 @@ public class SleepDataManager {
         this.dataService = dataService;
     }
 
-    /**
-     * 당일 수면 질 평가
-     * @param userId 사용자 ID
-     * @return "좋음", "보통", "나쁨" 중 하나
-     */
     public String getSleepQualityByDate(String userId, LocalDate date) {
         Duration sleepDuration = dataService.getSleepDurationByDate(userId, date);
         long totalMinutes = sleepDuration.toMinutes();
