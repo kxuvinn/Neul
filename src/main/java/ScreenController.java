@@ -32,7 +32,7 @@ public class ScreenController {
         SleepDataService sleepDataService = mainWindow.getSleepDataService();
         SleepDataManager sleepDataManager = new SleepDataManager(sleepDataService);
 
-        // 주간 그래프용 데이터 → 평균 계산
+        // 주간 그래프용 데이터, 평균 계산
         Map<String, Duration> graphData = sleepDataService.getWeeklySleepGraph(userId);
         Duration average = SleepCalculator.calculateAverageFromMap(graphData);
 
@@ -76,10 +76,10 @@ public class ScreenController {
     }
 
     public void showSleepRecommendation(SleepTime sleepTime) {
-        System.out.println("📨 SleepRecommendationPanel 생성 시작");
+        System.out.println("SleepRecommendationPanel 생성 시작");
         SleepRecommendationPanel panel = new SleepRecommendationPanel(this, sleepTime);
         mainWindow.addScreen("sleepRecommendation", panel);
-        System.out.println("📨 패널 등록 완료 → 전환 시도");
+        System.out.println("패널 등록 완료 -> 전환 시도");
         navigateTo("sleepRecommendation");
     }
 
