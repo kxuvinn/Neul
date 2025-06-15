@@ -24,11 +24,11 @@ public class DailyInfo extends JDialog {
         dateLabel.setFont(new Font("SansSerif", Font.BOLD, 30));  // 글씨체 변경
         dateLabel.setHorizontalAlignment(SwingConstants.LEFT);   // 왼쪽
         dateLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 0));   // 여백
-        dateLabel.setOpaque(true);                         // ← 배경색 적용 가능하게
-        dateLabel.setBackground(backgroundColor);          // ← contentPanel과 색 통일
+        dateLabel.setOpaque(true);                         // 배경색 적용
+        dateLabel.setBackground(backgroundColor);          // contentPanel과 색 통일
         add(dateLabel, BorderLayout.NORTH);   // 위쪽
 
-        // 중앙 패널 (왼쪽: 원, 오른쪽: 텍스트)
+        // 중앙 패널
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.setBackground(backgroundColor);
 
@@ -43,7 +43,7 @@ public class DailyInfo extends JDialog {
         JLabel sleepLabel = new JLabel(
                 "<html><b><span style='color:#4B0082'>" + hour + "시간 " + minute + "분</span></b> 취침</html>",
                 SwingConstants.RIGHT);
-        sleepLabel.setFont(new Font("SansSerif", Font.PLAIN, 24));  // 글자 크기 키움
+        sleepLabel.setFont(new Font("SansSerif", Font.PLAIN, 24));  // 글자 크기
         sleepLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 40)); // 오른쪽 여백 주기
 
         JLabel qualityLabel = new JLabel("<html>이날의 감정: <b>" + emotion + "</b></html>", SwingConstants.RIGHT);
@@ -57,7 +57,7 @@ public class DailyInfo extends JDialog {
         add(centerPanel, BorderLayout.CENTER);
     }
 
-    // 날짜 포맷 변환 (예: 05.19 Mon)
+    // 날짜 포맷 변환
     private String formatDate(LocalDate date) {
         Date utilDate = java.sql.Date.valueOf(date);
         SimpleDateFormat sdf = new SimpleDateFormat("MM.dd E", java.util.Locale.ENGLISH);
