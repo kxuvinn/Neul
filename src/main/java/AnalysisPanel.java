@@ -66,7 +66,7 @@ public class AnalysisPanel extends JPanel {
                 drawSleepGraph(g);
             }
 
-            // ✅ 마우스가 그래프 위에 있을 때만 툴팁 표시
+            //마우스가 그래프 위에 있을 때만 툴팁 표시
             @Override
             public String getToolTipText(MouseEvent e) {
                 int mouseX = e.getX();
