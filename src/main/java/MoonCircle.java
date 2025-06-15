@@ -17,7 +17,7 @@ public class MoonCircle extends JPanel {
         g2d.setColor(new Color(0, 0, 0, 50));
         g2d.fillOval(5, 5, 40, 40);
 
-        // 달 본체 (그라데이션 음영)
+        
         GradientPaint gradient = new GradientPaint(0, 0, new Color(255, 223, 0), 40, 40, new Color(200, 170, 0));
         g2d.setPaint(gradient);
         g2d.fillOval(0, 0, 40, 40);
