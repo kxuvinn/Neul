@@ -27,7 +27,7 @@ public class SleepCalculator {
 
     public static String formatDuration(Duration duration) {
         long hours = duration.toHours();
-        long minutes = duration.toMinutesPart(); // Java 9 이상에서 사용 가능
+        long minutes = duration.toMinutesPart();
         return hours + "시간 " + minutes + "분";
     }
 
