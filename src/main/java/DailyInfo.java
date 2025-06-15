@@ -6,11 +6,11 @@ import java.util.Date;
 
 public class DailyInfo extends JDialog {
 
-    // 날짜, 취침시간, 수면의 질 넘겨받기
+    // 날짜, 취침시간, 수면의 질, 감정 넘겨받기
     public DailyInfo(LocalDate date, String hour, String minute, String sleepQuality, String emotion) {
         setTitle("Daily Information");    // 창 이름
         setSize(600, 400);    // 창 크기
-        setResizable(false);
+        setResizable(false);  // 크기 고정
         setLocationRelativeTo(null);      // 창을 화면 정중앙에 띄움
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);     // 창 닫기
 
@@ -20,87 +20,33 @@ public class DailyInfo extends JDialog {
 
         // 날짜
         String formattedDate = formatDate(date);
-        JLabel dateLabel = new JLabel(formattedDate);
+        JLabel dateLabel = new JLabel(formattedDate);  // 포맷된 날짜 표시
         dateLabel.setFont(new Font("SansSerif", Font.BOLD, 30));  // 글씨체 변경
-        dateLabel.setHorizontalAlignment(SwingConstants.LEFT);   // 왼쪽
-        dateLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 0));   // 여백
-        dateLabel.setOpaque(true);                         // 배경색 적용
-        dateLabel.setBackground(backgroundColor);          // contentPanel과 색 통일
-        add(dateLabel, BorderLayout.NORTH);   // 위쪽
+        dateLabel.setHorizontalAlig기
 
-        // 중앙 패널
-        JPanel centerPanel = new JPanel(new BorderLayout());
-        centerPanel.setBackground(backgroundColor);
-
-        // 왼쪽 원형 패널
-        CircleStatusPanel circlePanel = new CircleStatusPanel(sleepQuality);
-        centerPanel.add(circlePanel, BorderLayout.WEST);
-
-        // 취침 시간, 수면의 질
-        JPanel contentPanel = new JPanel(new GridLayout(2, 1));
-        contentPanel.setBackground(backgroundColor);  // 바탕색 설정
-
-        JLabel sleepLabel = new JLabel(
-                "<html><b><span style='color:#4B0082'>" + hour + "시간 " + minute + "분</span></b> 취침</html>",
-                SwingConstants.RIGHT);
-        sleepLabel.setFont(new Font("SansSerif", Font.PLAIN, 24));  // 글자 크기
-        sleepLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 40)); // 오른쪽 여백 주기
-
-        JLabel qualityLabel = new JLabel("<html>이날의 감정: <b>" + emotion + "</b></html>", SwingConstants.RIGHT);
-        qualityLabel.setFont(new Font("SansSerif", Font.PLAIN, 24));
-        qualityLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 40));
-
-        contentPanel.add(sleepLabel);
-        contentPanel.add(qualityLabel);
-
-        centerPanel.add(contentPanel, BorderLayout.CENTER);
-        add(centerPanel, BorderLayout.CENTER);
-    }
-
-    // 날짜 포맷 변환
-    private String formatDate(LocalDate date) {
-        Date utilDate = java.sql.Date.valueOf(date);
-        SimpleDateFormat sdf = new SimpleDateFormat("MM.dd E", java.util.Locale.ENGLISH);
-        return sdf.format(utilDate);
-    }
-
-    // 원형 상태 표현하는 내부 클래스
-    static class CircleStatusPanel extends JPanel {
-        private final String sleepQuality;
-
-        public CircleStatusPanel(String quality) {
-            this.sleepQuality = quality;
-            setPreferredSize(new Dimension(300, 300));
-            setOpaque(false);
-        }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            Graphics2D g2 = (Graphics2D) g;
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-            // 색 결정
+            // 수면의 질 색 결정
             Color ringColor;
             switch (sleepQuality) {
                 case "좋음":
-                    ringColor = new Color(0, 100, 0);
+                    ringColor = new Color(0, 100, 0);  //초록색
                     break;
                 case "보통":
-                    ringColor = Color.ORANGE;
+                    ringColor = Color.ORANGE;  // 주황색
                     break;
                 case "나쁨":
-                    ringColor = new Color(139, 0, 0);
+                    ringColor = new Color(139, 0, 0);  // 빨간색
                     break;
                 default:
-                    ringColor = Color.GRAY;
+                    ringColor = Color.GRAY;  // 회색
             }
 
+            // 원 위치, 크기
             int size = 150;
             int x = (getWidth() - size) / 2;
             int y = (getHeight() - size) / 2 + 5;
 
-            g2.setStroke(new BasicStroke(15));
+            // 원 그리기
+            g2.setStroke(new BasicStroke(15));  // 두께
             g2.setColor(ringColor);
             g2.drawOval(x, y, size, size);
 
