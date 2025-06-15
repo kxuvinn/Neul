@@ -14,7 +14,7 @@ public class TodayPanel extends JPanel {
 
         if (this.user == null) {
             JOptionPane.showMessageDialog(this, "로그인 정보가 없습니다. 다시 로그인해주세요.");
-            controller.navigateTo("login"); // 또는 적절한 초기 화면
+            controller.navigateTo("login"); 
             return;
         }
 
@@ -30,8 +30,9 @@ public class TodayPanel extends JPanel {
         Image resizedImage = originalIcon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
         ImageIcon resizedIcon = new ImageIcon(resizedImage);
 
+        // 홈버튼 추가 
         JButton homeButton = new JButton(resizedIcon);
-        homeButton.setBounds(1375, 30, 32, 32); // 오른쪽 상단에 딱 맞게
+        homeButton.setBounds(1375, 30, 32, 32); 
         homeButton.setContentAreaFilled(false);
         homeButton.setBorderPainted(false);
         homeButton.setFocusPainted(false);
@@ -42,6 +43,7 @@ public class TodayPanel extends JPanel {
         });
         add(homeButton);
 
+        // 왼쪽 패널 
         JPanel sleepPanel = new JPanel(null);
         sleepPanel.setBounds(100, 200, 600, 500);
         sleepPanel.setBackground(Color.WHITE);
@@ -53,6 +55,7 @@ public class TodayPanel extends JPanel {
         sleepLabel.setFont(new Font("SansSerif", Font.BOLD, 30));
         sleepPanel.add(sleepLabel);
 
+        // 수면 시간 입력 
         SpinnerNumberModel hourModel = new SpinnerNumberModel(8, 0, 23, 1);
         JSpinner hourSpinner = new JSpinner(hourModel);
         hourSpinner.setFont(new Font("SansSerif", Font.BOLD, 24));
@@ -80,6 +83,7 @@ public class TodayPanel extends JPanel {
         minLabel.setBounds(325, 270, 60, 20);
         sleepPanel.add(minLabel);
 
+        // 오른쪽 패널 
         JPanel moodPanel = new JPanel(null);
         moodPanel.setBounds(740, 200, 600, 500);
         moodPanel.setBackground(Color.WHITE);
@@ -116,6 +120,7 @@ public class TodayPanel extends JPanel {
         badLabel.setBounds(410, 350, 140, 30);
         badLabel.setFont(moodFont);
 
+        // mood 버튼 event로 구현 
         ButtonGroup moodGroup = new ButtonGroup();
         moodGroup.add(goodBtn);
         moodGroup.add(normalBtn);
@@ -152,6 +157,7 @@ public class TodayPanel extends JPanel {
         moodPanel.add(normalLabel);
         moodPanel.add(badLabel);
 
+        // 저장 버튼 
         JButton saveBtn = new JButton("Save");
         saveBtn.setFont(new Font("SansSerif", Font.BOLD, 20));
         saveBtn.setBounds(637, 750, 166, 50);
@@ -204,9 +210,4 @@ public class TodayPanel extends JPanel {
         Image img = new ImageIcon(imageUrl).getImage().getScaledInstance(140, 140, Image.SCALE_SMOOTH);
         return new ImageIcon(img);
     }
-
-    //public static void main(String[] args) {
-        //SleepDataService service = new SleepDataService();
-        //SwingUtilities.invokeLater(() -> new TodayPanel());
-    //}
 }
