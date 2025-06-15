@@ -15,7 +15,7 @@ public class PanelManager extends JFrame{
         this.dataService = dataService;
         this.infoService = infoService;
 
-        // 화면 전환 중앙 통제용도임
+        // 화면 전환 중앙 통제
         setTitle("Sleep Tracker - NEUL");
         setSize(1440, 1024);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -29,10 +29,10 @@ public class PanelManager extends JFrame{
     }
 
     public void registerScreens(SleepDataService dataService, RandomSleepInformation infoService) {
-        addScreen("intro", new IntroPanel(controller));   // 초기 화면 (로그인/회원가입 버튼있는 화면)
+        addScreen("intro", new IntroPanel(controller));   // 초기 화면
         addScreen("login", new LoginPanel(controller));   // 로그인 화면
         addScreen("signup", new SignupPanel(controller)); // 회원가입 화면
-        addScreen("main", new MainMenuPanel(controller));     // 메인(홈) 화면
+        addScreen("main", new MainMenuPanel(controller));     // 메인 화면
         addScreen("calculator", new SleepInputPanel(controller)); // 시간계산기 화면
     }
 
@@ -40,7 +40,7 @@ public class PanelManager extends JFrame{
         this.controller = controller;
     }
 
-    // 화면 등록 메서드: 이름과 패널을 매핑하여 cardPanel에 추가
+    // 화면 등록 메서드
     public void addScreen(String name, JPanel panel){
         if (screens.containsKey(name)) {
             cardPanel.remove(screens.get(name)); // 이미 있는 패널 제거
@@ -50,9 +50,9 @@ public class PanelManager extends JFrame{
         cardPanel.add(panel,name);
     }
 
-    // 화면 전환 메서드: 이름을 기반으로 화면 전환
+    // 화면 전환 메서드
     public void showScreen(String name){
-        System.out.println("🔁 전환 시도: " + name);
+        System.out.println("전환 시도: " + name);
         cardLayout.show(cardPanel, name);
     }
 
